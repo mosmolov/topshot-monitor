@@ -27,15 +27,15 @@ request(options, function (error, response) {
       packList.forEach(pack => setTimeout(function sendData(){
         const embed = new Discord.MessageEmbed()
             .setThumbnail(pack.images[0]["url"])
-            .setFooter(`Made with Love by mozzy#1000 and thiccsupreme#0002`)
+            .setFooter(`@cardecline | @FootlockerRU`)
             .setTitle(pack.title)
+            .setURL(`https://www.nbatopshot.com/listings/pack/${pack.id}`)
             .setTimestamp()
             .addField('SKU', pack.id, true)
             .addField('Price',`$${Math.floor(pack.price)}`, true)
-            .addField('Important Links',`**[Product Link](https://www.nbatopshot.com/listings/pack/${pack.id})**`)
             .addField('Total Stock', pack.totalPackCount, false)
         const hook = new Discord.WebhookClient(webhookid, webhooktoken);
         hook.send(embed);                
-      }), 3000)
+      }), 10000)
     }
   });
