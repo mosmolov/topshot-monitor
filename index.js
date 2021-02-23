@@ -31,7 +31,7 @@ request(options, function (error, response) {
             .setTitle(pack.title)
             .setTimestamp()
             .addField('SKU', pack.id, true)
-            .addField('Price',Math.floor(pack.price), true)
+            .addField('Price',`$${Math.floor(pack.price)}`, true)
             .addField('Important Links',`**[Product Link](https://www.nbatopshot.com/listings/pack/${pack.id})**`)
             .addField('Total Stock', pack.totalPackCount, false)
         const hook = new Discord.WebhookClient(webhookid, webhooktoken);
