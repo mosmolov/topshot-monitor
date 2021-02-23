@@ -31,11 +31,11 @@ request(options, function (error, response) {
             .setTitle(pack.title)
             .setURL(`https://www.nbatopshot.com/listings/pack/${pack.id}`)
             .setTimestamp()
-            .addField('SKU', pack.id, true)
+            .addField('SKU', pack.id, false)
             .addField('Price',`$${Math.floor(pack.price)}`, true)
-            .addField('Total Stock', pack.totalPackCount, false)
+            .addField('Total Stock', pack.totalPackCount, true)
         const hook = new Discord.WebhookClient(webhookid, webhooktoken);
         hook.send(embed);                
       }), 10000)
     }
-  });
+  }); 
