@@ -27,7 +27,7 @@ request(options, function (error, response) {
       packList.forEach(pack => {
         const embed = new Discord.MessageEmbed()
             .setThumbnail(pack.images[0]["url"])
-            .setFooter(`Made with Love by mozzy#1000`)
+            .setFooter(`Made with Love by mozzy#1000 and thiccsupreme#0002`)
             .setTitle(pack.title)
             .setTimestamp()
             .addField('SKU', pack.id, true)
