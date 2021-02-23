@@ -24,7 +24,7 @@ request(options, function (error, response) {
     else{
       let data = JSON.parse(response.body)
       let packList = data["data"]["searchPackListings"]["data"]["searchSummary"]["data"]["data"] //Parse response to isolate JSON data of all individual packs *array*
-      packList.forEach(pack => {
+      packList.forEach(pack => setTimeout(function sendData(){
         const embed = new Discord.MessageEmbed()
             .setThumbnail(pack.images[0]["url"])
             .setFooter(`Made with Love by mozzy#1000 and thiccsupreme#0002`)
@@ -36,6 +36,6 @@ request(options, function (error, response) {
             .addField('Total Stock', pack.totalPackCount, false)
         const hook = new Discord.WebhookClient(webhookid, webhooktoken);
         hook.send(embed);                
-      })
+      }), 3000)
     }
   });
