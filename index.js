@@ -1,6 +1,6 @@
 var request = require('request');
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const { webhookid, webhooktoken } = require('./config.json');
 const options = {
     'method': 'POST',
     'url': `https://api.nba.dapperlabs.com/marketplace/graphql?SearchPackListings`,
@@ -22,7 +22,20 @@ const options = {
 request(options, function (error, response) {
     if (error) throw new Error(error);
     else{
-        console.log(response.statusCode)
-       console.log(JSON.parse(response.body)) 
+      let data = JSON.parse(response.body)
+      let packList = data["data"]["searchPackListings"]["data"]["searchSummary"]["data"]["data"] //Parse response to isolate JSON data of all individual packs *array*
+      packList.forEach(pack => {
+        const embed = new Discord.MessageEmbed()
+            .setThumbnail(pack.images[0]["url"])
+            .setFooter(`Made with Love by mozzy#1000`)
+            .setTitle(pack.title)
+            .setTimestamp()
+            .addField('SKU', pack.id, true)
+            .addField('Price',Math.floor(pack.price), true)
+            .addField('Important Links',`**[Product Link](https://www.nbatopshot.com/listings/pack/${pack.id})**`)
+            .addField('Total Stock', pack.totalPackCount, false)
+        const hook = new Discord.WebhookClient(webhookid, webhooktoken);
+        hook.send(embed);                
+      })
     }
   });
