@@ -18,20 +18,21 @@ const options = {
       "mode": "cors"
     
 }
-function initialReq(){
-  request(options, function (error, response) {
-    if (error) throw new Error(error);
-      let data = JSON.parse(response.body)
-      let packList = data["data"]["searchPackListings"]["data"]["searchSummary"]["data"]["data"] //Parse response to isolate JSON data of all individual packs *array*
-      console.log(packList)
-      let baseArr = packList.length
-      return baseArr;
-  })
+
+
+function compareData(packList, newPackList){
+  if(newPackList.length>packList.length){
+    sendData(newPackList)
+  }
+  newPackList.forEach(pack => {
+    if(pack.remaining != 0){
+      sendData(newPackList)
+    }
+  });
 }
 
-
 function sendData(packList){
-  let pack = packList[packList.length-1]
+  let pack = packList[0]
   const embed = new Discord.MessageEmbed()
             .setThumbnail(pack.images[0]["url"])
             .setFooter(`@cardecline | @FootlockerRU`)
@@ -41,27 +42,50 @@ function sendData(packList){
             .addField('SKU', pack.id, false)
             .addField('Price',`$${Math.floor(pack.price)}`, true)
             .addField('Total Stock', pack.totalPackCount, true)
+            .addField('Remaining Stock', pack.remaining, true)
         const hook = new Discord.WebhookClient(webhookid, webhooktoken);
         hook.send(embed);                
 }
-  
-const baseArr = initialReq();
-
-setInterval(function monitor(baseArr){
+function monitor(baseInfo){
   request(options, function (error, response) {
     if(response.statusCode == '200') console.log(`Request sent successfully at ${new Date()}`);
     if (error) throw new Error(error);
       let data = JSON.parse(response.body)
+      let newPackList = data["data"]["searchPackListings"]["data"]["searchSummary"]["data"]["data"] //Parse response to isolate JSON data of all individual packs *array*
+      compareData(baseInfo,newInfo);
+  });
+  
+}
+function initReq(){
+  request(options, function (error, response) {
+    if (error) throw new Error(error);
+    console.log(`Successfully sent Request at ${new Date()}`)
+      let data = JSON.parse(response.body)
       let packList = data["data"]["searchPackListings"]["data"]["searchSummary"]["data"]["data"] //Parse response to isolate JSON data of all individual packs *array*
-      let packqty = packList.length
-      if (packqty > baseArr){
-        sendData(packList)
+      console.log(packList)
+      let info = {
+        "amountOfPacks": packList.length,
+        "packInfo": packList
       }
-      packList.forEach(pack => {
-        if(pack.remaining != 0){
-          sendData(packList)
-        }
-      });
-
-  })
-}, 3000)
+    })
+}
+setInterval(function monitor(){
+  let packList = request(options, function (error, response) {
+    if (error) throw new Error(error);
+    console.log(`Successfully sent Request at ${new Date()}`)
+      let data = JSON.parse(response.body)
+      let packList = data["data"]["searchPackListings"]["data"]["searchSummary"]["data"]["data"] //Parse response to isolate JSON data of all individual packs *array*
+      console.log(packList)
+      return packList
+    })
+  let newPackList = request(options, function (error, response) {
+      if (error) throw new Error(error);
+    console.log(`Successfully sent Request at ${new Date()}`)
+        let data = JSON.parse(response.body)
+        let newPackList = data["data"]["searchPackListings"]["data"]["searchSummary"]["data"]["data"] //Parse response to isolate JSON data of all individual packs *array*
+        console.log(packList)
+        return newPackList
+      })
+    compareData(packList, newPackList)
+    
+    }, 3000)
